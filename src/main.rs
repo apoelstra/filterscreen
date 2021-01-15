@@ -24,6 +24,9 @@ fn main() -> io::Result<()> {
         alnum_state = new_alnum_state;
     }
 
+    words.sort();
+    words.dedup();
+
     // Try to parse words as various thingsha256
     for word in words {
         if sha256::Hash::from_str(&word).is_ok()

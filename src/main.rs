@@ -31,16 +31,18 @@ fn main() -> io::Result<()> {
 
     // Try to parse words as various thingsha256
     for word in words {
-        if sha256::Hash::from_str(&word).is_ok()
-            || hash160::Hash::from_str(&word).is_ok()
-            || bitcoin::Address::from_str(&word).is_ok()
-            || (u64::from_str(&word).is_ok() && word.len() > 4)
+        if sha256::Hash::from_str(&word).is_ok() {
+            println!("hash32: {}", word);
+        } else if hash160::Hash::from_str(&word).is_ok() {
+            println!("hash20: {}", word);
+        } else if bitcoin::Address::from_str(&word).is_ok() {
+            println!("address: {}", word);
+        } else if (u64::from_str(&word).is_ok() && word.len() > 4)
             || (f64::from_str(&word).is_ok() && word.len() > 4) {
-            println!("{}", word);
-        }
-        if let Ok(hex) = Vec::<u8>::from_hex(&word) {
+            println!("num: {}", word);
+        } else if let Ok(hex) = Vec::<u8>::from_hex(&word) {
             if bitcoin::Transaction::consensus_decode(&*hex).is_ok() {
-                println!("{}", word);
+                println!("tx: {}", word);
             }
         }
     }

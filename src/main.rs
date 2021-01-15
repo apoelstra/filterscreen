@@ -11,7 +11,7 @@ fn main() -> io::Result<()> {
     let mut alnum_state = false;
     for byte in io::stdin().bytes() {
         let byte = byte?;
-        let new_alnum_state = (byte as char).is_alphanumeric();
+        let new_alnum_state = (byte as char).is_alphanumeric() || byte == b'-' || byte == b'.';
 
         if alnum_state != new_alnum_state || !new_alnum_state {
             if let Ok(s) = String::from_utf8(s) {
@@ -31,7 +31,9 @@ fn main() -> io::Result<()> {
     for word in words {
         if sha256::Hash::from_str(&word).is_ok()
             || hash160::Hash::from_str(&word).is_ok()
-            || bitcoin::Address::from_str(&word).is_ok() {
+            || bitcoin::Address::from_str(&word).is_ok()
+            || (u64::from_str(&word).is_ok() && word.len() > 4)
+            || (f64::from_str(&word).is_ok() && word.len() > 4) {
             println!("{}", word);
         }
     }

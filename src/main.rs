@@ -13,7 +13,7 @@ fn main() -> io::Result<()> {
     let mut alnum_state = false;
     for byte in io::stdin().bytes() {
         let byte = byte?;
-        let new_alnum_state = (byte as char).is_alphanumeric() || byte == b'-' || byte == b'.';
+        let new_alnum_state = (byte as char).is_alphanumeric() || byte == b'-' || byte == b'.' || byte == b':' || byte == b'/';
 
         if alnum_state != new_alnum_state || !new_alnum_state {
             if let Ok(s) = String::from_utf8(s) {
@@ -37,6 +37,8 @@ fn main() -> io::Result<()> {
             println!("hash20: {}", word);
         } else if bitcoin::Address::from_str(&word).is_ok() {
             println!("address: {}", word);
+        } else if url::Url::from_str(&word).is_ok() {
+            println!("url: {}", word);
         } else if (u64::from_str(&word).is_ok() && word.len() > 4)
             || (f64::from_str(&word).is_ok() && word.len() > 4) {
             println!("num: {}", word);

@@ -8,3 +8,5 @@ edition = "2018"
 
 [dependencies]
 bitcoin = "0.26"
+url = "2"
+

@@ -1,6 +1,8 @@
 
 use bitcoin;
 use bitcoin::hashes::{sha256, hash160};
+use bitcoin::hashes::hex::FromHex;
+use bitcoin::consensus::Decodable;
 use std::io::{self, Read};
 use std::str::FromStr;
 
@@ -35,6 +37,11 @@ fn main() -> io::Result<()> {
             || (u64::from_str(&word).is_ok() && word.len() > 4)
             || (f64::from_str(&word).is_ok() && word.len() > 4) {
             println!("{}", word);
+        }
+        if let Ok(hex) = Vec::<u8>::from_hex(&word) {
+            if bitcoin::Transaction::consensus_decode(&*hex).is_ok() {
+                println!("{}", word);
+            }
         }
     }
 

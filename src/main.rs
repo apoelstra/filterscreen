@@ -38,7 +38,11 @@ fn main() -> io::Result<()> {
         } else if bitcoin::Address::from_str(&word).is_ok() {
             println!("address: {}", word);
         } else if url::Url::from_str(&word).is_ok() {
-            println!("url: {}", word);
+            if word.len() > 7 {
+                if &word[..8] == "https://" || &word[..7] == "http://" || &word[..4] == "www." {
+                    println!("url: {}", word);
+                }
+            }
         } else if (u64::from_str(&word).is_ok() && word.len() > 4)
             || (f64::from_str(&word).is_ok() && word.len() > 4) {
             println!("num: {}", word);

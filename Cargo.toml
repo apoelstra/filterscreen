@@ -8,5 +8,6 @@ edition = "2018"
 
 [dependencies]
 miniscript = "5.0"
+regex = "1"
 url = "2"
 

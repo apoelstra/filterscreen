@@ -3,6 +3,7 @@ use miniscript::{self, bitcoin};
 use miniscript::bitcoin::hashes::{sha256, hash160};
 use miniscript::bitcoin::hashes::hex::FromHex;
 use miniscript::bitcoin::consensus::Decodable;
+use regex::Regex;
 use std::collections::BTreeSet;
 use std::io::{self, Read};
 use std::str::FromStr;
@@ -17,6 +18,7 @@ fn main() -> io::Result<()> {
 
     // Split in various ways
     let words = full_string.split(&[' ', '\t', '\n'][..]);
+    let lines = full_string.split(&['\n'][..]);
 
     let hex_decoded = words
         .clone()
@@ -26,8 +28,8 @@ fn main() -> io::Result<()> {
         .clone()
         .filter(|word| word.chars().all(char::is_alphanumeric));
 
-    let ips = words
-        .clone()
+    let ips = full_string
+        .split(&[' ', '\t', '\n', '/'][..])  // also split on / so that `ip a` output finds IP addresses
         .filter(|word| std::net::IpAddr::from_str(word).is_ok());
 
     let macs = words
@@ -41,6 +43,14 @@ fn main() -> io::Result<()> {
         .filter(|word| f64::from_str(word).is_ok());
 
     let mut results = BTreeSet::new();
+
+    let shell_cmd_re = Regex::new(r"^\d{2}:\d{2}\d{2}.*@.*\$ (.*)$").unwrap();
+    for line in lines {
+        for shell_cmd in shell_cmd_re.captures_iter(line) {
+            results.insert(format!("cmd: {}", &shell_cmd[0]));
+        }
+    }
+
     for word in words {
         if url::Url::from_str(&word).is_ok() {
             if word.len() > 7 {

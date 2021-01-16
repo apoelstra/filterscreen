@@ -8,11 +8,11 @@ use std::collections::BTreeSet;
 use std::io::{self, Read};
 use std::str::FromStr;
 
-fn main() -> io::Result<()> {
+fn scan<R: Read>(mut input: R) -> io::Result<BTreeSet<String>> {
     // Capture screen
     let full_string = {
         let mut s = String::new();
-        io::stdin().read_to_string(&mut s)?;
+        input.read_to_string(&mut s)?;
         s
     };
 
@@ -44,10 +44,11 @@ fn main() -> io::Result<()> {
 
     let mut results = BTreeSet::new();
 
-    let shell_cmd_re = Regex::new(r"^\d{2}:\d{2}\d{2}.*@.*\$ (.*)$").unwrap();
+    // Require shell commands be at least 3 chars before we bother with them
+    let shell_cmd_re = Regex::new(r"^\d{2}:\d{2}:\d{2}.*@.*\$ (....*)$").unwrap();
     for line in lines {
         for shell_cmd in shell_cmd_re.captures_iter(line) {
-            results.insert(format!("cmd: {}", &shell_cmd[0]));
+            results.insert(format!("cmd: {}", &shell_cmd[1]));
         }
     }
 
@@ -107,11 +108,38 @@ fn main() -> io::Result<()> {
         results.insert(format!("num: {}", word));
     }
 
-    // Output
+    Ok(results)
+}
+
+fn main() -> io::Result<()> {
+    let results = scan(io::stdin())?;
     for line in results {
         println!("{}", line);
     }
-
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test1() {
+        let strinput = "\
+03:16:01 bash@sultana ~/code/filterscreen 57811a4$ 
+04:57:30 bash@sultana ~/code/filterscreen 57811a4$ ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+";
+
+        assert_eq!(
+            scan(strinput.as_bytes()).unwrap().into_iter().collect::<Vec<_>>(),
+            vec!["cmd: ip a", "ip: 127.0.0.1", "ip: ::1", "num: 1000", "num: 65536"],
+        );
+    }
 }
 

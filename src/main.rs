@@ -34,7 +34,7 @@ fn scan<R: Read>(mut input: R) -> io::Result<BTreeSet<String>> {
 
     let macs = words
         .clone()
-        .filter(|word| word.chars().all(|ch| ch.is_alphabetic() || ch == ':') &&
+        .filter(|word| word.chars().all(|ch| ch.is_alphanumeric() || ch == ':') &&
             word.chars().filter(|ch| *ch == ':').count() == 5);
 
     let nums = words

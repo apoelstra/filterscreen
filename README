@@ -1,0 +1,14 @@
+
+# Installing
+
+0. Install `rofi` from somewhere
+1. Run `cargo build`
+2. Edit `print-terminal.sh` to point to the right path
+3. In your `.Xresources` set
+
+    URxvt*print-pipe:                     "/home/apoelstra/bin/print-terminal.sh"
+
+again, with the path corrected.
+
+4. As you notice missing stuff, edit the source to add them and recompile
+

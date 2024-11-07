@@ -138,7 +138,7 @@ mod tests {
 
         assert_eq!(
             scan(strinput.as_bytes()).unwrap().into_iter().collect::<Vec<_>>(),
-            vec!["cmd: ip a", "ip: 127.0.0.1", "ip: ::1", "num: 1000", "num: 65536"],
+            vec!["cmd: ip a", "ip: 127.0.0.1", "ip: ::1", "mac: 00:00:00:00:00:00", "num: 1000", "num: 65536"],
         );
     }
 }
